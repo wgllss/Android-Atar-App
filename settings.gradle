@@ -1,0 +1,2 @@
+include ':app', ':android-common8', ':android-common-app-frame-library', ':refresh-library8', ':android-common-skin-library', ':android-common-plugin-library',
+        ':swithc-button8', ':other-apk'
