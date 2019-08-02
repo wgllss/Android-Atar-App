@@ -3,6 +3,7 @@
  */
 package com.atar.app.activitys.main;
 
+import android.activity.ActivityManager;
 import android.common.CommonHandler;
 import android.os.Message;
 import android.reflection.NetWorkMsg;
@@ -201,7 +202,8 @@ public class MainDemoActivity extends AtarRefreshListViewActivity {
 
     @Override
     public void onBackPressed() {
-        runOnBackground();
+        ActivityManager.getActivityManager().exitApp();
+//        runOnBackground();
     }
 
     @Override
