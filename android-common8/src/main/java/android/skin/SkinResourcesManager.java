@@ -6,6 +6,9 @@ package android.skin;
 import android.app.Activity;
 import android.appconfig.AppConfigDownloadManager;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 import android.interfaces.HandlerListener;
@@ -84,6 +87,7 @@ public class SkinResourcesManager {
 
     /**
      * 初始化皮肤资源
+     *
      * @param isDownLoadApkSkin     是否加载apk资源皮肤
      * @param skin_project_packname 皮肤工程包名
      * @param download_skin_Url     下载皮肤url
@@ -171,11 +175,33 @@ public class SkinResourcesManager {
      */
     private void loadSkinResources(final String skinFilePath, final loadSkinCallBack callback) {
         try {
-            AssetManager assetManager = AssetManager.class.newInstance();
-            Method addAssetPath = assetManager.getClass().getMethod("addAssetPath", String.class);
-            addAssetPath.invoke(assetManager, skinFilePath);
-            Resources superRes = mContext.getResources();
-            mResources = new Resources(assetManager, superRes.getDisplayMetrics(), superRes.getConfiguration());
+            int flags = PackageManager.GET_META_DATA | PackageManager.GET_ACTIVITIES | PackageManager.GET_SERVICES
+                    | PackageManager.GET_PROVIDERS | PackageManager.GET_RECEIVERS;
+//            if (checkSignatures) {
+//                flags |= PackageManager.GET_SIGNATURES;
+//            }
+            final PackageManager packageManager = mContext.getPackageManager();
+            final PackageInfo packageInfo = packageManager.getPackageArchiveInfo(skinFilePath, flags);
+            if (packageInfo == null) {
+                return;
+            }
+
+            final ApplicationInfo applicationInfo = packageInfo.applicationInfo;
+            if (applicationInfo == null) {
+                return;
+            }
+            applicationInfo.sourceDir = applicationInfo.publicSourceDir = skinFilePath;
+            try {
+                mResources = packageManager.getResourcesForApplication(applicationInfo);
+            } catch (PackageManager.NameNotFoundException e) {
+            }
+
+
+//            AssetManager assetManager = AssetManager.class.newInstance();
+//            Method addAssetPath = assetManager.getClass().getMethod("addAssetPath", String.class);
+//            addAssetPath.invoke(assetManager, skinFilePath);
+//            Resources superRes = mContext.getResources();
+//            mResources = new Resources(assetManager, superRes.getDisplayMetrics(), superRes.getConfiguration());
             if (callback != null) {
                 callback.loadSkinSuccess(mResources);
             }
@@ -227,7 +253,7 @@ public class SkinResourcesManager {
      * 下载皮肤
      *
      * @param activity
-     * @param newVersion      皮肤新版本号
+     * @param newVersion        皮肤新版本号
      * @param replaceMinVersion 皮肤在多少版本以上( >= )下载替换
      * @author :Atar
      * @createTime:2017-9-22下午2:42:49

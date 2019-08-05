@@ -47,7 +47,7 @@ public class AtarApplication extends Application {
             public void run() {
                 mInstance = AtarApplication.this;
                 CommonApplication.initApplication(AtarApplication.this);// 初始化全局Context
-                SkinResourcesManager.getInstance(AtarApplication.this).initSkinResources(false,
+                SkinResourcesManager.getInstance(AtarApplication.this).initSkinResources(true,
                         "com.atar.skin", UrlParamCommon.download_skin_url);
                 CommonNetWorkExceptionToast.initToastError(AtarApplication.this, R.array
                         .err_toast_string);// 初始化全局网络错误提示信息
